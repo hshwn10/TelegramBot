@@ -5,85 +5,144 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AI Seller Assistant Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --bg-color: var(--tg-theme-bg-color, #f4f4f7);
-            --secondary-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+            --bg-color: var(--tg-theme-secondary-bg-color, #f4f4f7);
+            --card-bg: var(--tg-theme-bg-color, #ffffff);
             --text-color: var(--tg-theme-text-color, #222222);
             --hint-color: var(--tg-theme-hint-color, #8e8e93);
             --button-color: var(--tg-theme-button-color, #007aff);
             --button-text-color: var(--tg-theme-button-text-color, #ffffff);
-            --border-radius: 16px;
-            --input-padding: 14px;
+            
+            --radius-card: 20px;
+            --radius-input: 14px;
+            --radius-button: 16px;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 16px;
-            padding-bottom: 80px; /* Space for fixed button */
+            padding: 0;
             display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
+            justify-content: center; /* Центрируем для ПК */
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* 1. Карточная архитектура */
+        /* Главный контейнер для адаптивности (ПК/Мобайл) */
+        #app {
+            width: 100%;
+            max-width: 600px; /* Идеальная ширина для компьютера */
+            min-height: 100vh;
+            padding: 16px 16px 100px 16px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* Карточки */
         .card {
-            background-color: var(--secondary-bg);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            background-color: var(--card-bg);
+            border-radius: var(--radius-card);
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
             margin-bottom: 16px;
         }
 
-        h2 { margin-top: 0; font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+        h2 { 
+            margin-top: 0; 
+            font-size: 20px; 
+            font-weight: 700; 
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
         
-        /* 2. Типографика и поля */
-        .form-group { margin-bottom: 16px; }
+        .form-group { margin-bottom: 20px; }
         .form-group:last-child { margin-bottom: 0; }
 
         label {
             display: block;
-            margin-bottom: 6px;
-            font-size: 13px;
+            margin-bottom: 8px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--hint-color);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
+        /* Поля ввода и селекты */
         select, input, textarea {
             width: 100%;
             background-color: var(--bg-color);
             color: var(--text-color);
-            border: 1px solid rgba(0,0,0,0.05);
-            padding: var(--input-padding);
-            border-radius: 10px;
+            border: 1px solid transparent;
+            padding: 16px;
+            border-radius: var(--radius-input);
             box-sizing: border-box;
             font-size: 16px;
+            font-family: 'Inter', sans-serif;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.2s ease;
+        }
+
+        /* Убиваем страшный системный дизайн у Select */
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e8e93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 16px;
+            padding-right: 40px;
         }
 
         select:focus, input:focus, textarea:focus {
+            background-color: var(--card-bg);
             border-color: var(--button-color);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
         }
 
-        textarea { resize: none; }
+        textarea { resize: vertical; min-height: 80px; }
 
-        /* 3. Фиксированная кнопка */
+        /* Блок лайфхака */
+        .lifehack {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-input);
+            padding: 16px;
+            text-align: center;
+            margin-top: 8px;
+            margin-bottom: 20px;
+            border: 1px dashed var(--hint-color);
+            opacity: 0.8;
+        }
+
+        .lifehack span {
+            font-size: 13px;
+            color: var(--text-color);
+            line-height: 1.4;
+            display: block;
+        }
+
+        /* Фиксированная кнопка */
         #send_btn_container {
             position: fixed;
             bottom: 0;
-            left: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100%;
-            background-color: var(--secondary-bg);
+            max-width: 600px;
             padding: 16px;
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
             box-sizing: border-box;
             z-index: 10;
+            background: var(--bg-color);
+            /* Эффект матового стекла под кнопкой */
+            background: color-mix(in srgb, var(--bg-color) 85%, transparent);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         button#send_btn {
@@ -91,52 +150,54 @@
             color: var(--button-text-color);
             border: none;
             padding: 18px;
-            border-radius: var(--border-radius);
+            border-radius: var(--radius-button);
             font-size: 17px;
-            font-weight: 700;
+            font-weight: 600;
             width: 100%;
             cursor: pointer;
-            transition: all 0.2s ease-in-out;
+            transition: transform 0.15s ease, opacity 0.15s ease;
+            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 8px;
         }
 
-        /* 3. Анимации кнопок */
         button#send_btn:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
             opacity: 0.9;
         }
         
         button#send_btn:disabled {
-            background-color: var(--hint-color);
+            opacity: 0.7;
             cursor: not-allowed;
             transform: none;
         }
 
-        /* 4. Спиннер загрузки */
+        /* Оверлей загрузки */
         #loading_overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255,255,255,0.8);
+            background-color: color-mix(in srgb, var(--bg-color) 80%, transparent);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
             display: none;
             align-items: center;
             justify-content: center;
             flex-direction: column;
             z-index: 1000;
-            backdrop-filter: blur(5px);
         }
 
         .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 40px;
-            height: 40px;
+            border: 4px solid var(--hint-color);
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             border-left-color: var(--button-color);
-            animation: spin 1s linear infinite;
+            animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
             margin-bottom: 16px;
         }
 
@@ -144,56 +205,55 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>🛍 Настройка товара</h2>
-        
-        <div class="form-group">
-            <label>Маркетплейс</label>
-            <select id="marketplace">
-                <option value="Wildberries">Wildberries</option>
-                <option value="Ozon">Ozon</option>
-                <option value="Яндекс Маркет">Яндекс Маркет</option>
-            </select>
+    <div id="app">
+        <div class="card">
+            <h2>🛍 Настройка товара</h2>
+            
+            <div class="form-group">
+                <label>Маркетплейс</label>
+                <select id="marketplace">
+                    <option value="Wildberries">Wildberries</option>
+                    <option value="Ozon">Ozon</option>
+                    <option value="Яндекс Маркет">Яндекс Маркет</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Тональность текста</label>
+                <select id="tone">
+                    <option value="Профессиональный">💼 Профессиональный</option>
+                    <option value="Дружелюбный">😊 Дружелюбный</option>
+                    <option value="Эмоциональный">🔥 Продающий (яркий)</option>
+                </select>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Тональность текста</label>
-            <select id="tone">
-                <option value="Профессиональный">💼 Профессиональный</option>
-                <option value="Дружелюбный">😊 Дружелюбный</option>
-                <option value="Эмоциональный">🔥 Продающий (яркий)</option>
-            </select>
-        </div>
-    </div>
+        <div class="card">
+            <h2>📝 Данные карточки</h2>
+            
+            <div class="form-group">
+                <label>Название товара</label>
+                <input type="text" id="p_name" placeholder="Например: Спортивный костюм">
+            </div>
 
-    <div class="card">
-        <h2>📝 Данные карточки</h2>
-        
-        <div class="form-group">
-            <label>Название товара</label>
-            <input type="text" id="p_name" placeholder="Спортивный костюм">
-        </div>
+            <div class="form-group">
+                <label>🤬 Минусы конкурентов (Отзывы)</label>
+                <textarea id="p_flaws" placeholder="Что пишут в плохих отзывах у других? (Например: тонкая ткань, линяет, маломерит...)"></textarea>
+            </div>
 
-        <div class="form-group" style="margin-top: 16px;">
-            <label>🤬 Минусы конкурентов (Отзывы)</label>
-            <textarea id="p_flaws" rows="3" placeholder="Что пишут в плохих отзывах у других? (Например: тонкая ткань, линяет, маломерит...)"></textarea>
+            <div class="form-group">
+                <label>Ключевые особенности</label>
+                <textarea id="p_features" placeholder="Ткань футер, оверсайз, не скатывается, производство РФ..."></textarea>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Ключевые особенности</label>
-            <textarea id="p_features" rows="5" placeholder="Ткань футер, оверсайз, не скатывается..."></textarea>
+        <div class="lifehack">
+            <span>💡 <b>Лайфхак:</b> можно не заполнять форму, а просто отправить боту в чат <b>фото товара</b>.</span>
         </div>
-    </div>
-
-    <div style="text-align: center; margin-bottom: 20px; margin-top: 10px;">
-        <span style="font-size: 13px; color: var(--hint-color);">
-            💡 <b>Лайфхак:</b> можно не заполнять форму, а просто отправить фото товара боту в чат.
-        </span>
     </div>
 
     <div id="send_btn_container">
@@ -202,50 +262,7 @@
 
     <div id="loading_overlay">
         <div class="spinner"></div>
-        <div id="loading_status" style="font-weight: 600;">ИИ анализирует...</div>
+        <div id="loading_status" style="font-weight: 600; font-family: 'Inter', sans-serif;">ИИ анализирует...</div>
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-
-        let btn = document.getElementById("send_btn");
-        let overlay = document.getElementById("loading_overlay");
-
-        btn.addEventListener("click", () => {
-            let market = document.getElementById("marketplace").value;
-            let tone = document.getElementById("tone").value;
-            let name = document.getElementById("p_name").value;
-            let features = document.getElementById("p_features").value;
-            
-            if (!name || !features) {
-                tg.showAlert("Пожалуйста, заполните все поля!");
-                return;
-            }
-
-            // Показываем загрузку
-            overlay.style.display = 'flex';
-            btn.innerHTML = '⏳ Генерирую...';
-            btn.disabled = true;
-
-            let flaws = document.getElementById("p_flaws").value;
-            let data = `ПЛОЩАДКА: ${market}\nСТИЛЬ: ${tone}\nТОВАР: ${name}\nДАННЫЕ: ${features}`;
-            
-            // Если селлер ввел минусы конкурентов, добавляем их в запрос
-            if (flaws.trim() !== "") {
-                data += `\nНЕДОСТАТКИ КОНКУРЕНТОВ (СДЕЛАЙ ОТСТРОЙКУ): ${flaws}`;
-            }
-            
-            // Отправляем данные боту
-            tg.sendData(data);
-            
-            // Важный UX-момент: мы не закрываем окно *мгновенно*.
-            // Мы даем пользователю 0.5 секунды, чтобы он увидел спиннер 
-            // и бот в чате успел прислать "Думаю...".
-            setTimeout(() => {
-                tg.close();
-            }, 500);
-        });
-    </script>
-</body>
-</html>
