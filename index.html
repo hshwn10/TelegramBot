@@ -183,7 +183,7 @@
             <label>🤬 Минусы конкурентов (Отзывы)</label>
             <textarea id="p_flaws" rows="3" placeholder="Что пишут в плохих отзывах у других? (Например: тонкая ткань, линяет, маломерит...)"></textarea>
         </div>
-        
+
         <div class="form-group">
             <label>Ключевые особенности</label>
             <textarea id="p_features" rows="5" placeholder="Ткань футер, оверсайз, не скатывается..."></textarea>
@@ -228,7 +228,13 @@
             btn.innerHTML = '⏳ Генерирую...';
             btn.disabled = true;
 
+            let flaws = document.getElementById("p_flaws").value;
             let data = `ПЛОЩАДКА: ${market}\nСТИЛЬ: ${tone}\nТОВАР: ${name}\nДАННЫЕ: ${features}`;
+            
+            // Если селлер ввел минусы конкурентов, добавляем их в запрос
+            if (flaws.trim() !== "") {
+                data += `\nНЕДОСТАТКИ КОНКУРЕНТОВ (СДЕЛАЙ ОТСТРОЙКУ): ${flaws}`;
+            }
             
             // Отправляем данные боту
             tg.sendData(data);
