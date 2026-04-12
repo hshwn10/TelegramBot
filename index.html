@@ -5,130 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AI Seller Assistant Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
     <style>
         :root {
-            --bg-color: var(--tg-theme-secondary-bg-color, #f4f4f7);
-            --card-bg: var(--tg-theme-bg-color, #ffffff);
+            /* Переменные темы Telegram - они сами меняются на темной теме! */
+            --bg-color: var(--tg-theme-bg-color, #f4f4f7);
+            --secondary-bg: var(--tg-theme-secondary-bg-color, #ffffff);
             --text-color: var(--tg-theme-text-color, #222222);
             --hint-color: var(--tg-theme-hint-color, #8e8e93);
             --button-color: var(--tg-theme-button-color, #007aff);
             --button-text-color: var(--tg-theme-button-text-color, #ffffff);
-            
-            --radius-card: 20px;
-            --radius-input: 14px;
-            --radius-button: 16px;
+            --base-gap: 16px;
         }
 
+        /* Полная адаптивность: на ПК форма по центру, на мобилках - на весь экран */
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
             padding: 0;
             display: flex;
-            justify-content: center; /* Центрируем для ПК */
-            -webkit-tap-highlight-color: transparent;
-            -webkit-text-size-adjust: 100%; /* ЗАПРЕТИТЬ iOS менять размер шрифта */
-            touch-action: manipulation; 
+            justify-content: center; /* Центрируем для десктопа */
+            overflow-x: hidden;
+            touch-action: manipulation; /* Убирает задержку нажатий на iOS */
+            overscroll-behavior: none; /* Убирает "отскок" страницы при скролле */
         }
 
-        /* Главный контейнер для адаптивности (ПК/Мобайл) */
-        #app {
-            #app {
+        /* Главный контейнер бота */
+        #app-container {
+            display: flex;
+            flex-direction: column;
             width: 100%;
-            max-width: 600px; 
-            /* ЗАМЕНИТЬ: */
-            min-height: 100dvh; 
-            padding: 16px 16px 100px 16px;
-            box-sizing: border-box;
-            position: relative;
-        }
+            max-width: 600px; /* Ограничитель ширины для ПК */
+            min-height: 100vh; /* Высота на весь экран */
+            background-color: var(--bg-color);
         }
 
-        /* Карточки */
+        /* Контентная часть */
+        #app-content {
+            flex: 1 0 auto; /* Растягивается и занимает всё место */
+            padding: calc(var(--base-gap) + env(safe-area-inset-top, 0)) var(--base-gap) 20px var(--base-gap);
+        }
+
+        /* Блоки с настройками и данными */
         .card {
-            background-color: var(--card-bg);
-            border-radius: var(--radius-card);
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-            margin-bottom: 16px;
+            background-color: var(--secondary-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-bottom: var(--base-gap);
         }
 
         h2 { 
             margin-top: 0; 
             font-size: 20px; 
             font-weight: 700; 
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            margin-bottom: 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
         }
         
-        .form-group { margin-bottom: 20px; }
+        /* Поля ввода и селекты */
+        .form-group { margin-bottom: 16px; }
         .form-group:last-child { margin-bottom: 0; }
 
         label {
             display: block;
             margin-bottom: 8px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
             color: var(--hint-color);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        /* Поля ввода и селекты */
         select, input, textarea {
             width: 100%;
             background-color: var(--bg-color);
             color: var(--text-color);
-            border: 1px solid transparent;
-            padding: 16px;
-            border-radius: var(--radius-input);
+            border: 1px solid rgba(0,0,0,0.05);
+            padding: 14px;
+            border-radius: 12px;
             box-sizing: border-box;
-            font-size: 16px;
-            font-family: 'Inter', sans-serif;
+            font-size: 16px; /* Идеально для iOS, чтобы не увеличивало */
             outline: none;
-            transition: all 0.2s ease;
+            transition: border-color 0.2s;
+            -webkit-appearance: none; /* Убиваем системный дизайн */
+            appearance: none;
         }
 
-        /* Убиваем страшный системный дизайн у Select */
-        /* Усиленный дизайн для Select */
+        /* Кастомный дизайн для Select */
         select {
-            display: block; /* Важно для iOS */
-            height: 52px; /* Фиксированная высота */
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none; /* УБИТЬ СИСТЕМНЫЙ ДИЗАЙН iOS */
-            
-            /* Новая кастомная белая стрелочка для черной темы */
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+            /* Новая красивая галочка */
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e8e93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
             background-repeat: no-repeat;
-            background-position: right 20px center;
+            background-position: right 14px center;
             background-size: 16px;
-            padding: 16px; /* Отступы для текста внутри */
+            padding-right: 40px; /* Space for the arrow */
         }
 
+        textarea { resize: vertical; min-height: 100px; }
+
+        /* Эффект фокуса */
         select:focus, input:focus, textarea:focus {
-            background-color: var(--card-bg);
             border-color: var(--button-color);
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
         }
-
-        textarea { resize: vertical; min-height: 80px; }
 
         /* Блок лайфхака */
         .lifehack {
-            background-color: var(--card-bg);
-            border-radius: var(--radius-input);
+            background-color: var(--secondary-bg);
+            border-radius: 12px;
             padding: 16px;
             text-align: center;
-            margin-top: 8px;
             margin-bottom: 20px;
             border: 1px dashed var(--hint-color);
-            opacity: 0.8;
+            opacity: 0.9;
         }
 
         .lifehack span {
@@ -138,58 +130,54 @@
             display: block;
         }
 
-        /* Фиксированная кнопка */
-        /* ЛИПКАЯ КНОПКА (Sticky) вместо фиксированной */
-        #send_btn_container {
-            position: -webkit-sticky;
-            position: sticky; /* Липкий режим */
+        /* ИДЕАЛЬНАЯ ЛИПКАЯ КНОПКА ПО КАНАЛАМ
+         Она всегда внизу, но не перекрывает контент!
+        */
+        #app-footer {
+            flex-shrink: 0; /* Не сжимается */
+            position: sticky;
             bottom: 0;
             left: 0;
             width: 100%;
             max-width: 600px;
-            
-            /* Отступы, чтобы кнопка не прилипала вплотную к краю */
-            padding: 16px 16px 30px 16px; 
             box-sizing: border-box;
-            z-index: 10;
-            
-            /* Эффект матового стекла под кнопкой */
-            background-color: color-mix(in srgb, var(--bg-color) 85%, transparent);
+            background-color: color-mix(in srgb, var(--bg-color) 85%, transparent); /* Эффект стекла */
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            margin-top: 10px;
+            padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0)) 16px;
+            margin-top: auto;
         }
-        
+
         button#send_btn {
             background-color: var(--button-color);
             color: var(--button-text-color);
             border: none;
             padding: 18px;
-            border-radius: var(--radius-button);
+            border-radius: 14px;
             font-size: 17px;
             font-weight: 600;
             width: 100%;
             cursor: pointer;
-            transition: transform 0.15s ease, opacity 0.15s ease;
-            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.2);
+            transition: opacity 0.2s, transform 0.1s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            -webkit-tap-highlight-color: transparent;
         }
 
         button#send_btn:active {
-            transform: scale(0.97);
             opacity: 0.9;
+            transform: scale(0.99);
         }
         
         button#send_btn:disabled {
-            opacity: 0.7;
+            background-color: var(--hint-color);
             cursor: not-allowed;
-            transform: none;
+            opacity: 0.7;
         }
 
-        /* Оверлей загрузки */
+        /* ОВЕРЛЕЙ ЗАГРУЗКИ ПО КАНАЛАМ */
         #loading_overlay {
             position: fixed;
             top: 0;
@@ -197,8 +185,8 @@
             width: 100%;
             height: 100%;
             background-color: color-mix(in srgb, var(--bg-color) 80%, transparent);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
             display: none;
             align-items: center;
             justify-content: center;
@@ -207,12 +195,12 @@
         }
 
         .spinner {
-            border: 4px solid var(--hint-color);
-            width: 48px;
-            height: 48px;
+            border: 4px solid var(--secondary-bg);
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             border-left-color: var(--button-color);
-            animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            animation: spin 1s linear infinite;
             margin-bottom: 16px;
         }
 
@@ -220,64 +208,117 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
     </style>
 </head>
 <body>
 
-    <div id="app">
-        <div class="card">
-            <h2>🛍 Настройка товара</h2>
-            
-            <div class="form-group">
-                <label>Маркетплейс</label>
-                <select id="marketplace">
-                    <option value="Wildberries">Wildberries</option>
-                    <option value="Ozon">Ozon</option>
-                    <option value="Яндекс Маркет">Яндекс Маркет</option>
-                </select>
+    <div id="app-container">
+        
+        <div id="app-content">
+            <div class="card">
+                <h2>🛍 Настройка товара</h2>
+                
+                <div class="form-group">
+                    <label>Маркетплейс</label>
+                    <select id="marketplace">
+                        <option value="Wildberries">Wildberries</option>
+                        <option value="Ozon">Ozon</option>
+                        <option value="Яндекс Маркет">Яндекс Маркет</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Тональность текста</label>
+                    <select id="tone">
+                        <option value="Профессиональный">💼 Профессиональный</option>
+                        <option value="Дружелюбный">😊 Дружелюбный</option>
+                        <option value="Эмоциональный">🔥 Продающий (яркий)</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Тональность текста</label>
-                <select id="tone">
-                    <option value="Профессиональный">💼 Профессиональный</option>
-                    <option value="Дружелюбный">😊 Дружелюбный</option>
-                    <option value="Эмоциональный">🔥 Продающий (яркий)</option>
-                </select>
+            <div class="card">
+                <h2>📝 Данные карточки</h2>
+                
+                <div class="form-group">
+                    <label>Название товара</label>
+                    <input type="text" id="p_name" placeholder="Спортивный костюм">
+                </div>
+
+                <div class="form-group">
+                    <label>🤬 Минусы конкурентов (Отзывы)</label>
+                    <textarea id="p_flaws" placeholder="Что пишут в плохих отзывах у других? (Например: тонкая ткань, линяет, маломерит...)"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Ключевые особенности</label>
+                    <textarea id="p_features" placeholder="Ткань футер, оверсайз, не скатывается..."></textarea>
+                </div>
+            </div>
+
+            <div class="lifehack">
+                <span>💡 <b>Лайфхак:</b> можно не заполнять форму, а просто отправить боту в чат <b>фото товара</b>.</span>
             </div>
         </div>
 
-        <div class="card">
-            <h2>📝 Данные карточки</h2>
-            
-            <div class="form-group">
-                <label>Название товара</label>
-                <input type="text" id="p_name" placeholder="Например: Спортивный костюм">
-            </div>
-
-            <div class="form-group">
-                <label>🤬 Минусы конкурентов (Отзывы)</label>
-                <textarea id="p_flaws" placeholder="Что пишут в плохих отзывах у других? (Например: тонкая ткань, линяет, маломерит...)"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Ключевые особенности</label>
-                <textarea id="p_features" placeholder="Ткань футер, оверсайз, не скатывается, производство РФ..."></textarea>
-            </div>
+        <div id="app-footer">
+            <button id="send_btn">Сгенерировать описание</button>
         </div>
-
-        <div class="lifehack">
-            <span>💡 <b>Лайфхак:</b> можно не заполнять форму, а просто отправить боту в чат <b>фото товара</b>.</span>
-        </div>
-    </div>
-
-    <div id="send_btn_container">
-        <button id="send_btn">Сгенерировать описание</button>
     </div>
 
     <div id="loading_overlay">
         <div class="spinner"></div>
-        <div id="loading_status" style="font-weight: 600; font-family: 'Inter', sans-serif;">ИИ анализирует...</div>
+        <div id="loading_status" style="font-weight: 600;">ИИ анализирует...</div>
     </div>
 
     <script>
+        // Инициализация
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // Подключаем Haptic Feedback (Вибрация)
+        let haptic = tg.HapticFeedback;
+
+        let btn = document.getElementById("send_btn");
+        let overlay = document.getElementById("loading_overlay");
+
+        btn.addEventListener("click", () => {
+            // Вибрация при нажатии
+            haptic.impactOccurred('medium');
+
+            let market = document.getElementById("marketplace").value;
+            let tone = document.getElementById("tone").value;
+            let name = document.getElementById("p_name").value;
+            let features = document.getElementById("p_features").value;
+            let flaws = document.getElementById("p_flaws").value;
+            
+            // Валидация
+            if (!name || !features) {
+                haptic.notificationOccurred('error');
+                tg.showAlert("Пожалуйста, заполните название и особенности товара!");
+                return;
+            }
+
+            // Показываем загрузку
+            overlay.style.display = 'flex';
+            btn.innerHTML = '⏳ Генерирую...';
+            btn.disabled = true;
+
+            // Сбор данных
+            let data = `ПЛОЩАДКА: ${market}\nСТИЛЬ: ${tone}\nТОВАР: ${name}\nДАННЫЕ: ${features}`;
+            if (flaws.trim() !== "") {
+                data += `\nНЕДОСТАТКИ КОНКУРЕНТОВ (СДЕЛАЙ ОТСТРОЙКУ): ${flaws}`;
+            }
+            
+            // Отправляем данные боту
+            tg.sendData(data);
+            
+            // Даем время на показ спиннера и закрываем
+            setTimeout(() => {
+                tg.close();
+            }, 600);
+        });
+    </script>
+</body>
+</html>
