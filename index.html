@@ -30,16 +30,21 @@
             display: flex;
             justify-content: center; /* Центрируем для ПК */
             -webkit-tap-highlight-color: transparent;
+            -webkit-text-size-adjust: 100%; /* ЗАПРЕТИТЬ iOS менять размер шрифта */
+            touch-action: manipulation; 
         }
 
         /* Главный контейнер для адаптивности (ПК/Мобайл) */
         #app {
+            #app {
             width: 100%;
-            max-width: 600px; /* Идеальная ширина для компьютера */
-            min-height: 100vh;
+            max-width: 600px; 
+            /* ЗАМЕНИТЬ: */
+            min-height: 100dvh; 
             padding: 16px 16px 100px 16px;
             box-sizing: border-box;
             position: relative;
+        }
         }
 
         /* Карточки */
@@ -90,14 +95,20 @@
         }
 
         /* Убиваем страшный системный дизайн у Select */
+        /* Усиленный дизайн для Select */
         select {
-            appearance: none;
+            display: block; /* Важно для iOS */
+            height: 52px; /* Фиксированная высота */
             -webkit-appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e8e93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            -moz-appearance: none;
+            appearance: none; /* УБИТЬ СИСТЕМНЫЙ ДИЗАЙН iOS */
+            
+            /* Новая кастомная белая стрелочка для черной темы */
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
             background-repeat: no-repeat;
-            background-position: right 16px center;
+            background-position: right 20px center;
             background-size: 16px;
-            padding-right: 40px;
+            padding: 16px; /* Отступы для текста внутри */
         }
 
         select:focus, input:focus, textarea:focus {
@@ -128,23 +139,27 @@
         }
 
         /* Фиксированная кнопка */
+        /* ЛИПКАЯ КНОПКА (Sticky) вместо фиксированной */
         #send_btn_container {
-            position: fixed;
+            position: -webkit-sticky;
+            position: sticky; /* Липкий режим */
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 0;
             width: 100%;
             max-width: 600px;
-            padding: 16px;
+            
+            /* Отступы, чтобы кнопка не прилипала вплотную к краю */
+            padding: 16px 16px 30px 16px; 
             box-sizing: border-box;
             z-index: 10;
-            background: var(--bg-color);
+            
             /* Эффект матового стекла под кнопкой */
-            background: color-mix(in srgb, var(--bg-color) 85%, transparent);
+            background-color: color-mix(in srgb, var(--bg-color) 85%, transparent);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
+            margin-top: 10px;
         }
-
+        
         button#send_btn {
             background-color: var(--button-color);
             color: var(--button-text-color);
