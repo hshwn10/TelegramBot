@@ -7,14 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        // Настройки темы Tailwind для соответствия дизайну
+        // Настройки темы Tailwind
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
                         'accent': '#b388ff', // Яркий фиолетовый для кнопки
-                        'sub-bg': '#f9f9f9', // Светлый фон для контейнеров
-                        'info-bg': '#e8f0fe', // Голубоватый фон для инфо-блока
+                        'sub-bg': '#f9f9f9',
+                        'info-bg': '#e8f0fe',
                     },
                     borderRadius: {
                         'xl': '1rem',
@@ -25,14 +25,16 @@
         }
     </script>
     <style>
-        /* Отключаем стандартные стили для кнопок-переключателей */
+        /* Отключаем стандартные стили */
         .option-button:focus { outline: none; }
+        
+        /* === ИЗМЕНИЛИ ЦВЕТ ТУТ (Синий вместо черного) === */
         .option-button.active {
-            background-color: #333333; /* Темный фон для активной кнопки */
+            background-color: #3b82f6; /* Красивый синий цвет */
             color: white;
-            border-color: #333333;
+            border-color: #3b82f6;
         }
-        /* Стили для скролла, если форма длинная */
+        
         ::-webkit-scrollbar { width: 0px; background: transparent; }
         body { -webkit-overflow-scrolling: touch; }
     </style>
@@ -51,7 +53,9 @@
         </div>
     </header>
 
-    <main class="space-y-7 pb-24"> <section class="space-y-3">
+    <main class="space-y-7">
+
+        <section class="space-y-3">
             <h3 class="text-lg font-medium text-gray-700">Выберите маркетплейс</h3>
             <div class="flex gap-2.5 flex-wrap" id="marketplace-group">
                 <button class="option-button active px-5 py-3 rounded-xl border border-gray-200 text-base font-medium transition-all duration-150" data-value="Wildberries">Wildberries</button>
@@ -71,17 +75,17 @@
 
         <section class="space-y-3">
             <h3 class="text-lg font-medium text-gray-700">Название товара</h3>
-            <input type="text" id="product_name" placeholder="Например: Беспроводные наушники AirPods Pro" class="w-full px-5 py-4 rounded-xl border border-gray-200 focus:border-gray-400 focus:ring-0 transition-all text-base">
+            <input type="text" id="product_name" placeholder="Например: Беспроводные наушники AirPods Pro" class="w-full px-5 py-4 rounded-xl border border-gray-200 focus:border-gray-400 focus:ring-0 transition-all text-base outline-none">
         </section>
 
         <section class="space-y-3">
             <h3 class="text-lg font-medium text-gray-700">Ключевые особенности</h3>
-            <textarea id="key_features" rows="4" placeholder="Материал, цвет, размер, функции..." class="w-full px-5 py-4 rounded-xl border border-gray-200 focus:border-gray-400 focus:ring-0 transition-all text-base resize-none"></textarea>
+            <textarea id="key_features" rows="4" placeholder="Материал, цвет, размер, функции..." class="w-full px-5 py-4 rounded-xl border border-gray-200 focus:border-gray-400 focus:ring-0 transition-all text-base resize-none outline-none"></textarea>
         </section>
 
         <section class="space-y-3">
             <h3 class="text-lg font-medium text-gray-700">Минусы конкурентов</h3>
-            <textarea id="competitor_cons" rows="3" placeholder="Что пишут в негативных отзывах у конкурентов..." class="w-full px-5 py-4 rounded-xl border border-gray-200 focus:border-gray-400 focus:ring-0 transition-all text-base resize-none"></textarea>
+            <textarea id="competitor_cons" rows="3" placeholder="Что пишут в негативных отзывах у конкурентов..." class="w-full px-5 py-4 rounded-xl border border-gray-200 focus:border-gray-400 focus:ring-0 transition-all text-base resize-none outline-none"></textarea>
         </section>
 
         <div class="info-bg p-5 rounded-xl border border-blue-100 flex items-start gap-3.5 mt-5">
@@ -93,62 +97,67 @@
             <p class="text-gray-700 text-base leading-relaxed">Не хотите заполнять форму? Просто отправьте фото товара боту в чат — он сам создаст описание!</p>
         </div>
 
+        <div class="pt-6 pb-10">
+            <button id="main-button" class="accent w-full py-4 rounded-xl text-white text-lg font-semibold flex items-center justify-center gap-2.5 transition-all duration-150 active:scale-[0.98] shadow-lg shadow-purple-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.364-6.364l.707.707M6.364 18.364l-.707.707M18.364 18.364l.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+                <span>Сгенерировать описание</span>
+            </button>
+        </div>
+
     </main>
 
-    <footer class="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-sm border-t border-gray-100">
-        <button id="main-button" class="accent w-full py-4 rounded-xl text-white text-lg font-semibold flex items-center justify-center gap-2.5 transition-all duration-150 active:scale-[0.98] shadow-lg shadow-purple-200">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.364-6.364l.707.707M6.364 18.364l-.707.707M18.364 18.364l.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-            </svg>
-            <span>Сгенерировать описание</span>
-        </button>
-    </footer>
-
-    <div class="fixed bottom-24 right-4 z-10">
-        <button class="bg-gray-800 text-white w-10 h-10 rounded-full flex items-center justify-center font-medium shadow-md">?</button>
+    <div class="fixed bottom-6 right-4 z-10 pointer-events-none">
+        <div class="bg-gray-800 text-white w-10 h-10 rounded-full flex items-center justify-center font-medium shadow-md pointer-events-auto cursor-pointer">?</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Расширяем на весь экран
+        tg.expand(); 
 
-        // Реализуем логику выбора кнопок (radio)
+        // ИСПРАВЛЕНИЕ: Прячем клавиатуру при клике мимо полей
+        document.addEventListener('click', (e) => {
+            const isInput = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
+            const isButton = e.target.closest('button') || e.target.closest('.option-button');
+            
+            // Если клик не по полю ввода и не по кнопке — убираем фокус
+            if (!isInput && !isButton) {
+                document.activeElement.blur();
+            }
+        });
+
+        // Логика выбора кнопок
         function setupButtonGroup(groupId) {
             const group = document.getElementById(groupId);
             const buttons = group.querySelectorAll('.option-button');
 
             buttons.forEach(button => {
                 button.addEventListener('click', () => {
-                    // Убираем active у всех
                     buttons.forEach(b => b.classList.remove('active'));
-                    // Добавляем active нажатой
                     button.classList.add('active');
                 });
             });
         }
 
-        // Включаем логику для обеих групп
         setupButtonGroup('marketplace-group');
         setupButtonGroup('tone-group');
 
-        // ГЛАВНАЯ ЛОГИКА - Собираем данные и отправляем боту
+        // Отправка данных
         const mainBtn = document.getElementById('main-button');
 
         mainBtn.addEventListener('click', () => {
-            // 1. Собираем активные значения
             const marketplace = document.querySelector('#marketplace-group .option-button.active').dataset.value;
             const tone = document.querySelector('#tone-group .option-button.active').dataset.value;
             const productName = document.getElementById('product_name').value;
             const keyFeatures = document.getElementById('key_features').value;
             const competitorCons = document.getElementById('competitor_cons').value;
 
-            // 2. Проверяем обязательные поля (например, имя)
             if (!productName || !keyFeatures) {
                 tg.showAlert("⚠️ Пожалуйста, заполните как минимум название товара и его особенности.");
                 return;
             }
 
-            // 3. Собираем красивый текст запроса для бота
             const finalRequest = `
 Маркетплейс: ${marketplace}
 Тональность: ${tone}
@@ -157,7 +166,6 @@
 НЕДОСТАТКИ КОНКУРЕНТОВ: ${competitorCons || '[Не указано]'}
 `.trim();
 
-            // 4. Отправляем и закрываем!
             tg.sendData(finalRequest);
         });
     </script>
